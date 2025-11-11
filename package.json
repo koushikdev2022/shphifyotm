@@ -11,7 +11,8 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- migration:generate -d src/config/db.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/config/db.ts",
-    "migration:revert": "npm run typeorm migration:revert -d src/config/db.ts"
+    "migration:revert": "npm run typeorm migration:revert -d src/config/db.ts",
+    "migration:create": "npm run typeorm -- migration:create -n"
   },
   "author": "koushik",
   "license": "ISC",
