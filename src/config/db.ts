@@ -31,7 +31,7 @@
 
 import { DataSource } from "typeorm";
 import path from "path";
-
+import 'dotenv/config'; 
 const isCompiled = __filename.endsWith('.js');
 
 // Log environment variables
