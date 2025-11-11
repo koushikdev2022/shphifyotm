@@ -1,19 +1,29 @@
-import "reflect-metadata";
 import { DataSource } from "typeorm";
-import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+const isCompiled = __filename.endsWith('.js');
 
 export const AppDataSource = new DataSource({
-    type: "mysql",
-    host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "3306", 10),
-    username: process.env.DB_USERNAME || "root",
-    password: process.env.DB_PASSWORD || "",
-    database: process.env.DB_DATABASE || "database",
-    synchronize: false, // Never use true in production
-    logging: process.env.NODE_ENV === "development",
-    entities: ["src/entities/**/*.ts"],
-    migrations: ["src/migrations/**/*.ts"],
-    subscribers: ["src/subscribers/**/*.ts"],
+  type: "mysql",
+  host: process.env.DB_HOST || "localhost",
+  port: parseInt(process.env.DB_PORT || "3306", 10),
+  username: process.env.DB_USERNAME || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_DATABASE || "ts",
+
+  synchronize: false,
+
+  logging: process.env.NODE_ENV !== "production",
+  
+  entities: isCompiled
+    ? [path.join(__dirname, "../entities/**/*.js")]
+    : [path.join(__dirname, "../entities/**/*.ts")],
+    
+  migrations: isCompiled
+    ? [path.join(__dirname, "../migration/**/*.js")]
+    : [path.join(__dirname, "../migration/**/*.ts")],
+    
+  subscribers: isCompiled
+    ? [path.join(__dirname, "../subscriber/**/*.js")]
+    : [path.join(__dirname, "../subscriber/**/*.ts")],
 });

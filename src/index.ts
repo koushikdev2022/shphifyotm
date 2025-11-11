@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import express, { Application, Request, Response } from "express";
-import dotenv from "dotenv";
+
 import cors from "cors";
 import morgan from "morgan";
 import { AppDataSource } from "./config/db";
@@ -21,14 +21,16 @@ app.use("/api/",loadRoute);
 
 
 const connectDatabase = async (): Promise<void> => {
-    try {
-        await AppDataSource.initialize();
-        console.log("✓ MySQL connected successfully with TypeORM");
-    } catch (error) {
-        console.error("✗ Database connection failed:", error);
-        process.exit(1);
-    }
+  try {
+    console.log('Initializing AppDataSource...');
+    await AppDataSource.initialize();
+    console.log('AppDataSource initialized successfully');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    process.exit(1);
+  }
 };
+
 
 const startServer = async (): Promise<void> => {
     await connectDatabase();
