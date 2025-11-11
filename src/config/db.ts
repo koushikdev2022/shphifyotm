@@ -20,8 +20,8 @@ export const AppDataSource = new DataSource({
     : [path.join(__dirname, "../entities/**/*.ts")],
     
   migrations: isCompiled
-    ? [path.join(__dirname, "../migration/**/*.js")]
-    : [path.join(__dirname, "../migration/**/*.ts")],
+    ? [path.join(__dirname, "../migrations/**/*.js")]
+    : [path.join(__dirname, "../migrations/**/*.ts")],
     
   subscribers: isCompiled
     ? [path.join(__dirname, "../subscriber/**/*.js")]
