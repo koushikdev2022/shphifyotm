@@ -2,6 +2,8 @@ import express, { Router } from "express";
 
 const loadRoute: Router = express.Router();
 import userRoute from "./user/auth/auth.route"
+import otmRoute from "./user/otm/otm.route"
+import shopifyRouter from "./user/shopify/shopify.route"
 
 interface RouteConfig {
     prefix: string;
@@ -13,6 +15,13 @@ const defaultRoutes: RouteConfig[] = [
       {
         prefix:"/auth",
         route:userRoute
+      },
+      {
+        prefix:"/otm",
+        route:otmRoute
+      },{
+        prefix:"/shopifyRouter",
+        route:shopifyRouter
       }
    
 ];
