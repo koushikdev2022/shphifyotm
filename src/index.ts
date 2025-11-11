@@ -6,7 +6,8 @@ import morgan from "morgan";
 import { AppDataSource } from "./config/db";
 import loadRoute from './router/load.route';
 
-dotenv.config();
+import 'dotenv/config'; // or require('dotenv').config();
+
 
 const app: Application = express();
 const port = parseInt(process.env.PORT || "8080", 10);
