@@ -16,6 +16,7 @@
   "author": "koushik",
   "license": "ISC",
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
@@ -27,6 +28,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@shopify/shopify-api": "^12.1.1",
+    "@shopify/shopify-app-express": "^6.0.2",
+    "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
