@@ -4,6 +4,7 @@ const loadRoute: Router = express.Router();
 import userRoute from "./user/auth/auth.route"
 import otmRoute from "./user/otm/otm.route"
 import shopifyRouter from "./user/shopify/shopify.route"
+import otmPaymentRouter from "./user/otmPayment/otmPaymentRoute";
 
 interface RouteConfig {
     prefix: string;
@@ -22,6 +23,9 @@ const defaultRoutes: RouteConfig[] = [
       },{
         prefix:"/shopifyRouter",
         route:shopifyRouter
+      },{
+        prefix:"/otmpayment",
+        route:otmPaymentRouter
       }
    
 ];
