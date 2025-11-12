@@ -7,7 +7,7 @@ const paymentService = new PaymentService();
 
 const OMT_BASE_URL = process.env.OMT_BASE_URL || 'https://pay-test.omt.com.lb/onlinepayment/api';
 const OMT_USERNAME = process.env.OMT_USERNAME!;
-const OMT_PASSWORD = process.env.OMT_PASSWORD!;
+const OMT_PASSWORD = "<Fr-i0t+Hrw7`eeRN,W8w";
 
 // In-memory token storage (replace with Redis/DB in production)
 let accessToken = '';
