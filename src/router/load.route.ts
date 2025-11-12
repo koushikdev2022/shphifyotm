@@ -18,13 +18,13 @@ const defaultRoutes: RouteConfig[] = [
         route:userRoute
       },
       {
-        prefix:"/otm",
+        prefix:"/otmroute",
         route:otmRoute
       },{
         prefix:"/shopifyRouter",
         route:shopifyRouter
       },{
-        prefix:"/otmpayment",
+        prefix:"/otm",
         route:otmPaymentRouter
       }
    

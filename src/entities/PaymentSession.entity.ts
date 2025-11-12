@@ -1,112 +1,58 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
-  ManyToOne,
-  JoinColumn
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { ShopCredentials } from './ShopCredentials.entity';
 
-class ColumnNumericTransformer {
-  to(data: number): number {
-    return data;
-  }
-  from(data: string): number {
-    return parseFloat(data);
-  }
-}
+// ✅ Define enum type
+export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded' | 'captured' | 'voided';
 
 @Entity('payment_sessions')
-@Index(['shopifySessionId']) 
-@Index(['omtTransactionId'])  
-@Index(['status'])
 export class PaymentSession {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ name: 'shop', type: 'varchar', length: 255 })
   shop: string;
 
-  @Column({ 
-    type: 'varchar', 
-    length: 255, 
-    unique: true,
-    name: 'shopify_session_id'
-  })
+  @Column({ name: 'shopify_session_id', type: 'varchar', length: 255, unique: true })
   shopifySessionId: string;
 
-  @Column({ 
-    type: 'varchar', 
-    length: 255, 
-    nullable: true,
-    name: 'omt_transaction_id'
-  })
+  @Column({ name: 'omt_transaction_id', type: 'varchar', length: 255, nullable: true, unique: true })
   omtTransactionId: string | null;
 
-  @Column({
-    type: 'decimal',
-    precision: 10,
-    scale: 2,
-    transformer: new ColumnNumericTransformer()
-  })
+  @Column({ name: 'omt_payment_url', type: 'text', nullable: true })
+  omtPaymentUrl: string | null;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
   @Column({ type: 'varchar', length: 3 })
   currency: string;
 
   @Column({ 
-    type: 'varchar', 
-    length: 50,
+    type: 'enum',
+    enum: ['pending', 'processing', 'completed', 'failed', 'refunded', 'captured', 'voided'],
     default: 'pending'
   })
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+  status: PaymentStatus;  // ✅ Use the type instead of 'string'
 
-  @Column({ 
-    type: 'text', 
-    nullable: true,
-    name: 'shopify_redirect_url'
-  })
-  shopifyRedirectUrl: string | null;
-
-  @Column({ 
-    type: 'text', 
-    nullable: true,
-    name: 'omt_payment_url'
-  })
-  omtPaymentUrl: string | null;
-
-  @Column({ 
-    type: 'text', 
-    nullable: true,
-    name: 'error_message'
-  })
-  errorMessage: string | null;
-
-  @Column({ 
-    type: 'varchar', 
-    length: 255, 
-    nullable: true,
-    name: 'customer_email'
-  })
+  @Column({ name: 'customer_email', type: 'varchar', length: 255, nullable: true })
   customerEmail: string | null;
 
-  @Column({ 
-    type: 'text', 
-    nullable: true,
-    name: 'metadata'
-  })
-  metadata: string | null;
+  @Column({ name: 'shopify_redirect_url', type: 'text', nullable: true })
+  shopifyRedirectUrl: string | null;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @Column({ name: 'error_message', type: 'text', nullable: true })
+  errorMessage: string | null;
+
+  @Column({ name: 'test', type: 'boolean', default: false })
+  test: boolean;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 
-  @ManyToOne(() => ShopCredentials, (shopCreds: ShopCredentials) => shopCreds.paymentSessions)
+  @ManyToOne(() => ShopCredentials, { nullable: true })
   @JoinColumn({ name: 'shop', referencedColumnName: 'shop' })
-  shopCredentials: ShopCredentials;
+  shopCredentials?: ShopCredentials;
 }

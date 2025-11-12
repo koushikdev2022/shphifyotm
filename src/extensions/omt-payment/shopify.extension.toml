@@ -1,0 +1,27 @@
+api_version = "2025-10"
+
+[[extensions]]
+type = "payments_extension"
+name = "OMT Payment Gateway"
+handle = "omt-payment-gateway"
+
+[extensions.settings]
+# Main payment endpoints (Fixed URLs)
+payment_session_url = "https://shopifytsapi.bestworks.cloud/api/otm/session"
+refund_session_url = "https://shopifytsapi.bestworks.cloud/api/otm/refunds/session"
+capture_session_url = "https://shopifytsapi.bestworks.cloud/api/otm/capture/session"
+void_session_url = "https://shopifytsapi.bestworks.cloud/api/otm/void/session"
+
+# Supported configurations
+supported_countries = ["LB", "AE", "SA"]
+supported_payment_methods = ["visa", "mastercard", "debit"]
+supports_3ds = true
+test_mode_available = true
+
+# Display labels
+merchant_label = "OMT Payment Gateway"
+buyer_label = "Pay with OMT"
+
+# Payment processing
+supports_installments = false
+supports_deferred_payments = false

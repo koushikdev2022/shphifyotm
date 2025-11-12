@@ -1,0 +1,25 @@
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "omt-payment-gateway"
+client_id = ""  # Auto-filled by CLI
+application_url = "https://shopifytsapi.bestworks.cloud/"
+embedded = false  # Payment apps are not embedded
+
+[access_scopes]
+# Required scopes for payment apps
+scopes = "write_payment_gateways,write_payment_sessions"
+
+[auth]
+redirect_urls = [
+  "https://shopifytsapi.bestworks.cloud//api/shopify/auth/callback"
+]
+
+[webhooks]
+api_version = "2025-10"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "your-dev-store.myshopify.com"
