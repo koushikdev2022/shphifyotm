@@ -11,6 +11,7 @@ import {
   initiatePaymentOMT, 
   getPaymentStatusOMT 
 } from "../../../controller/api/user/otm/otm.controller";
+import axios from "axios";
 
 const otmPaymentRouter: Router = express.Router();
 
@@ -78,6 +79,43 @@ otmPaymentRouter.post('/payments/status', getPaymentStatusOMT);
  * Health check endpoint
  * GET /api/otm/health
  */
+
+otmPaymentRouter.get("/auth/callback", async (req, res) => {
+  const { shop, code } = req.query;
+
+  if (!shop || !code) {
+    return res.status(400).send("Missing shop or code parameter");
+  }
+
+  try {
+    // Exchange code for access token
+    const response = await axios.post(
+      `https://${shop}/admin/oauth/access_token`,
+      {
+        client_id: process.env.SHOPIFY_API_KEY,
+        client_secret: process.env.SHOPIFY_API_SECRET,
+        code
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const accessToken = response.data.access_token;
+    const scope = response.data.scope;
+
+    // 🚩🚩🚩 PRINT THE CREDENTIALS 🚩🚩🚩
+    console.log("=== SHOPIFY OAUTH CREDENTIALS RECEIVED ===");
+    console.log("Shop  :", shop);
+    console.log("Token :", accessToken);
+    console.log("Scope :", scope);
+    console.log("==========================================");
+
+    res.send("Access token has been printed in the server logs. You can now copy it.");
+  } catch (error: any) {
+    console.error("❌ Failed to get Shopify access token", error.response?.data || error.message);
+    res.status(500).send("Failed to get access token from Shopify");
+  }
+});
+
 otmPaymentRouter.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
