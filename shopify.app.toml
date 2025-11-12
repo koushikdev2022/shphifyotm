@@ -2,16 +2,16 @@
 
 name = "omt-payment-gateway"
 client_id = ""  # Auto-filled by CLI
-application_url = "https://shopifytsapi.bestworks.cloud/"
+application_url = "https://shopifytsapi.bestworks.cloud"
 embedded = false  # Payment apps are not embedded
 
 [access_scopes]
-# Required scopes for payment apps
-scopes = "write_payment_gateways,write_payment_sessions"
+# ✅ FIXED: Include BOTH read and write scopes for payment apps
+scopes = "write_payment_gateways,write_payment_sessions,read_payment_gateways,read_payment_sessions"
 
 [auth]
 redirect_urls = [
-  "https://shopifytsapi.bestworks.cloud//api/shopify/auth/callback"
+  "https://shopifytsapi.bestworks.cloud/api/shopify/auth/callback"
 ]
 
 [webhooks]
@@ -22,4 +22,4 @@ embedded = false
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "your-dev-store.myshopify.com"
+include_config_on_deploy = true
