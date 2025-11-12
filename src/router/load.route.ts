@@ -21,7 +21,7 @@ const defaultRoutes: RouteConfig[] = [
         prefix:"/otmroute",
         route:otmRoute
       },{
-        prefix:"/shopifyRouter",
+        prefix:"/shopify",
         route:shopifyRouter
       },{
         prefix:"/otm",
