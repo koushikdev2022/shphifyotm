@@ -2,3 +2,7 @@ npm run typeorm -- migration:create src/migrations/user
 
 
 node debug.js
+
+
+
+https://dev.shopify.com/dashboard/174550222/apps

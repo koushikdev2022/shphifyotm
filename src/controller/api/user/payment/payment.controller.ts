@@ -5,8 +5,8 @@ import { PaymentStatus } from '../../../../entities';
 
 const paymentService = new PaymentService();
 
-const OMT_BASE_URL = process.env.OMT_BASE_URL || 'https://pay-test.omt.com.lb/onlinepayment/api';
-const OMT_USERNAME = process.env.OMT_USERNAME!;
+const OMT_BASE_URL = 'https://pay-test.omt.com.lb/onlinepayment/api';
+const OMT_USERNAME = "nicolas.kadri@tedmob.com";
 const OMT_PASSWORD = "<Fr-i0t+Hrw7`eeRN,W8w";
 
 // In-memory token storage (replace with Redis/DB in production)
@@ -527,13 +527,24 @@ export const createPaymentSession = async (req: Request, res: Response) => {
 
     console.log('💾 Payment session saved to DB:', session.id);
 
-    // 2. Initiate payment with OMT
-    const omtPayment = await initiateOMTPayment({
-      amount: parseFloat(amount),
-      currency: currency,
-      identifier: merchant_locale.shop_id,
-      transactionId: id,
-    });
+    // 2. Initiate payment with OMT (skip for test transactions)
+    let omtPayment;
+    if (test) {
+      // Mock response for test transactions
+      omtPayment = {
+        transaction_id: `test-omt-${id}`,
+        payment_url: `https://shopifytsapi.bestworks.cloud/api/otm/callback?transaction_id=test-omt-${id}&status=success`
+      };
+      console.log('🧪 Using mock OMT payment for test transaction');
+    } else {
+      // Real OMT payment for production
+      omtPayment = await initiateOMTPayment({
+        amount: parseFloat(amount),
+        currency: currency,
+        identifier: merchant_locale.shop_id,
+        transactionId: id,
+      });
+    }
 
     // 3. Update session with OMT details
     await paymentService.updateWithOMTTransaction(
@@ -591,15 +602,27 @@ export const handlePaymentCallback = async (req: Request, res: Response) => {
       amount: session.amount,
     });
 
-    // 2. Verify with OMT
-    const omtStatus = await getOMTPaymentStatus(transaction_id as string);
+    // 2. Verify payment status
+    let paymentStatus: PaymentStatus;
+    let errorMessage: string | null = null;
+
+    // Check if this is a test transaction
+    if ((transaction_id as string).startsWith('test-omt-')) {
+      // Mock test transaction - use query parameter status
+      paymentStatus = status === 'success' ? 'completed' : 'failed';
+      console.log('🧪 Test transaction detected, using mock status:', paymentStatus);
+    } else {
+      // Real transaction - verify with OMT
+      const omtStatus = await getOMTPaymentStatus(transaction_id as string);
+      paymentStatus = omtStatus.status === 'success' ? 'completed' : 'failed';
+      errorMessage = omtStatus.error_message || null;
+    }
 
     // 3. Update status in database
-    const paymentStatus: PaymentStatus = omtStatus.status === 'success' ? 'completed' : 'failed';
     await paymentService.updatePaymentStatus(
       transaction_id as string,
       paymentStatus,
-      omtStatus.error_message || null
+      errorMessage
     );
 
     console.log(`💾 Payment status updated to: ${paymentStatus}`);
@@ -626,7 +649,7 @@ export const handlePaymentCallback = async (req: Request, res: Response) => {
         session.shop,
         shopCreds.accessToken,
         session.shopifySessionId,
-        omtStatus.error_message || 'Payment failed'
+        errorMessage || 'Payment failed'
       );
     }
 
@@ -685,12 +708,24 @@ export const handleRefundSession = async (req: Request, res: Response) => {
       originalAmount: payment.amount
     });
 
-    // 2. Process refund with OMT
-    const omtRefund = await initiateOMTRefund({
-      transactionId: payment.omtTransactionId,
-      amount: parseFloat(amount),
-      currency: currency
-    });
+    // 2. Process refund with OMT or mock for test
+    let omtRefund;
+    if (payment.omtTransactionId.startsWith('test-omt-')) {
+      // Mock refund for test transactions
+      omtRefund = {
+        refund_id: `test-refund-${id}`,
+        status: 'success',
+        error_message: null
+      };
+      console.log('🧪 Using mock refund for test transaction');
+    } else {
+      // Real refund
+      omtRefund = await initiateOMTRefund({
+        transactionId: payment.omtTransactionId,
+        amount: parseFloat(amount),
+        currency: currency
+      });
+    }
 
     // 3. Save refund to database
     await paymentService.createRefund({
@@ -773,11 +808,15 @@ export const handleCaptureSession = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Payment not processed with OMT' });
     }
 
-    // 2. Capture payment with OMT
-    const omtCapture = await captureOMTPayment(
-      payment.omtTransactionId,
-      parseFloat(amount)
-    );
+    // 2. Capture payment with OMT or mock for test
+    if (payment.omtTransactionId.startsWith('test-omt-')) {
+      console.log('🧪 Using mock capture for test transaction');
+    } else {
+      await captureOMTPayment(
+        payment.omtTransactionId,
+        parseFloat(amount)
+      );
+    }
 
     // 3. Update payment status in database
     await paymentService.updatePaymentStatus(
@@ -845,8 +884,12 @@ export const handleVoidSession = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Payment not processed with OMT' });
     }
 
-    // 2. Void payment with OMT
-    const omtVoid = await voidOMTPayment(payment.omtTransactionId);
+    // 2. Void payment with OMT or mock for test
+    if (payment.omtTransactionId.startsWith('test-omt-')) {
+      console.log('🧪 Using mock void for test transaction');
+    } else {
+      await voidOMTPayment(payment.omtTransactionId);
+    }
 
     // 3. Update payment status in database
     await paymentService.updatePaymentStatus(
