@@ -629,6 +629,7 @@ export const handlePaymentCallback = async (req: Request, res: Response) => {
 
     // 4. Get shop credentials
     const shopCreds = await paymentService.getShopCredentials(session.shop);
+    console.log(shopCreds,"shopCreds")
 
     if (!shopCreds) {
       console.error('❌ Shop credentials not found for:', session.shop);
