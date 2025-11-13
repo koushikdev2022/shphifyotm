@@ -783,7 +783,7 @@ export const handleCaptureSession = async (req: Request, res: Response) => {
   try {
     const { id, gid, payment_id, amount, currency } = req.body;
 
-    console.log('🎯 Capture request received:', {
+    console.log(' Capture request received:', {
       captureSessionId: id,
       paymentId: payment_id,
       amount,
